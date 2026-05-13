@@ -822,7 +822,7 @@ form.addEventListener('submit', async (e) => {
   };
 
   try {
-    const response = await fetch('http://localhost:5000/api/submit', {
+    const response = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -897,7 +897,7 @@ function logout() {
 async function fetchInputs() {
   const list = document.getElementById('inputsList');
   try {
-    const response = await fetch('http://localhost:5000/api/inputs');
+    const response = await fetch('/api/inputs');
     const data = await response.json();
     
     if (data.length === 0) {
@@ -906,10 +906,15 @@ async function fetchInputs() {
     }
 
     list.innerHTML = data.map(item => `
-      <div class="dashboard-card">
+      <div class="dashboard-card" id="submission-${item.id}">
         <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
           <div style="font-weight: 700; color: var(--accent);">${item.user_name}</div>
-          <div style="font-size: 11px; color: var(--muted);">${new Date(item.created_at).toLocaleString()}</div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 11px; color: var(--muted);">${new Date(item.created_at).toLocaleString()}</div>
+            <button onclick="deleteInput(${item.id})" style="background: none; border: none; color: #ff4444; cursor: pointer; padding: 4px;" title="Delete">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
         </div>
         <div style="font-size: 13px; margin-bottom: 8px; color: var(--text)">${item.user_email}</div>
         <div style="font-size: 13px; line-height: 1.6; color: var(--muted); white-space: pre-wrap; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">${item.message}</div>
@@ -919,6 +924,7 @@ async function fetchInputs() {
     list.innerHTML = '<p style="color: #ff5c1a">Error loading data. Is the server running?</p>';
   }
 }
+
 async function deleteInput(id) {
   if (!confirm('Are you sure you want to delete this submission?')) return;
   
