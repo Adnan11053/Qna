@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-
 // Database Setup
 const dbPath = path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -29,7 +28,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
         console.error('Database connection error:', err.message);
     } else {
         console.log('Connected to SQLite database.');
-        // Initialize tables
         const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
         db.exec(schema, (err) => {
             if (err) console.error('Schema initialization error:', err.message);
@@ -37,7 +35,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-// Helper for DB queries
 const query = (sql, params = []) => {
     return new Promise((resolve, reject) => {
         db.all(sql, params, (err, rows) => {
@@ -55,8 +52,6 @@ const run = (sql, params = []) => {
         });
     });
 };
-
-// Endpoints
 
 // 1. Submit User Input
 app.post('/api/submit', async (req, res) => {
@@ -78,7 +73,7 @@ app.post('/api/login', async (req, res) => {
     try {
         const users = await query('SELECT * FROM admin WHERE email = ? AND password = ?', [email, password]);
         if (users.length > 0) {
-            res.json({ success: true, token: 'mock-jwt-token' }); // In production, use real JWT
+            res.json({ success: true, token: 'mock-jwt-token' });
         } else {
             res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
@@ -89,7 +84,6 @@ app.post('/api/login', async (req, res) => {
 
 // 3. Get All Inputs (Admin Only)
 app.get('/api/inputs', async (req, res) => {
-    // In production, verify token here
     try {
         const rows = await query('SELECT * FROM user_inputs ORDER BY created_at DESC');
         res.json(rows);
