@@ -92,6 +92,16 @@ app.get('/api/inputs', async (req, res) => {
     }
 });
 
+app.delete('/api/inputs/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await run('DELETE FROM user_inputs WHERE id = ?', [id]);
+        res.json({ success: true, message: 'Submission deleted' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
